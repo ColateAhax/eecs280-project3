@@ -76,7 +76,7 @@ std::istream & operator>>(std::istream &is, Suit &suit);
 class Card {
 public:
 
-  //EFFECTS Initializes Card to the Two of Spades
+  //EFFECTS Initializes Card to the Two of Spades//rhea
   Card();
 
   //EFFECTS Initializes Card to specified rank and suit
