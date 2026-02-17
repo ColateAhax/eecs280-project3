@@ -315,3 +315,5 @@ std::istream & operator>>(std::istream &is, Card &card)
   is >> card.rank >> str >> card.suit;
   return is;
 }
+
+//updated
