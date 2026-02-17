@@ -329,5 +329,4 @@ TEST(test_less_card_with_suit)
 {
     //
 }
-
 TEST_MAIN()

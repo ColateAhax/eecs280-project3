@@ -69,7 +69,31 @@ void Pack::reset()
 //          https://en.wikipedia.org/wiki/In_shuffle.
 void Pack::shuffle()
 {
-    //
+
+    //calcualting the number of elements by getting total array byte size and
+    //dividing it by size of one element
+    int totalCards = sizeof(cards) / sizeof(cards[0]);
+    
+    Card temp[totalCards];
+    int count = 0;
+    while (count < 7)
+    //going through each element in the array 
+    for(int i = 0; i < totalCards; i++){
+        //in shuffle formula
+        int newPos = (2i + 1) %(totalCards + 1);
+
+        if newPos == totalCards{ //making sure it doesnt go out of bounds
+            newPos -= 1;
+        }
+        temp[newPos] = cards[i];
+    
+    }
+
+    for(int c = 0; c < totalCards; c++){
+        cards[c] = temp[c];
+    }
+    
+    count++;
 }
 
 // EFFECTS: returns true if there are no more cards left in the pack
