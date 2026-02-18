@@ -318,8 +318,6 @@ TEST(test_less_card_basic)//rhea
    
     ASSERT_TRUE(Card_less(cardLeft, cardRight, trump));
 
-
-
 }
 
 // //EFFECTS Returns true if a is lower value than b.  Uses both the trump suit
@@ -330,4 +328,3 @@ TEST(test_less_card_with_suit)
     //
 }
 TEST_MAIN()
-//updated

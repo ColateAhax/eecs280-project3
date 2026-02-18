@@ -13,19 +13,23 @@ using namespace std;
   // NOTE: Do NOT use pack.in in your implementation of this function
   // NOTE: The pack is initially full, with no cards dealt.
 Pack::Pack()
+:next(0)
 {
-    //good job boss
-//boss ts the easiest func
-int card_index;
+    int card_index = 0;
     for(int s = 0; s < 4; s++)
     {
         Suit suit = static_cast<Suit>(s);
         //going thru suit
-        for(int r = TWO; r <= ACE; r++){//going through rank
+        for(int r = NINE; r <= ACE; r++)
+        {
+            //going through 
+            
+            //enum can be auto casted to int
+            //int cannot be auto casted enum
             Rank rank = static_cast<Rank>(r);
-            Card newCard(rank, suit);//nick help i need to input parameters that are Rank and Suit objects idk how to
-            cards[card_index] = newCard;
-            card_index++;
+            Card newCard(rank, suit);
+            
+            cards[card_index++] = newCard;
         }
     }
 }
@@ -38,7 +42,7 @@ int card_index;
 Pack::Pack(std::istream& pack_input)
 {//good job employee
     next = 0;
-    for (int i = 0; i < 24; i++)
+    for (int i = 0; i < PACK_SIZE; i++)
     {
         std::string str;
         Rank r;
@@ -69,37 +73,38 @@ void Pack::reset()
 //          https://en.wikipedia.org/wiki/In_shuffle.
 void Pack::shuffle()
 {
+  
+   Card temp[PACK_SIZE];
+   int count = 0;
+   while (count < 7)
+   {
+   //going through each element in the array
+   for(int i = 0; i < PACK_SIZE; i++)
+   {
+       //in shuffle formula
+       int newPos = (2*i + 1) % (PACK_SIZE + 1);
 
-    //calcualting the number of elements by getting total array byte size and
-    //dividing it by size of one element
-    int totalCards = sizeof(cards) / sizeof(cards[0]);
-    
-    Card temp[totalCards];
-    int count = 0;
-    while (count < 7)
-    //going through each element in the array 
-    for(int i = 0; i < totalCards; i++){
-        //in shuffle formula
-        int newPos = (2i + 1) %(totalCards + 1);
 
-        if newPos == totalCards{ //making sure it doesnt go out of bounds
-            newPos -= 1;
-        }
-        temp[newPos] = cards[i];
-    
-    }
+       if (newPos == PACK_SIZE)
+       { //making sure it doesnt go out of bounds
+           newPos -= 1;
+       }
+       temp[newPos] = cards[i];
 
-    for(int c = 0; c < totalCards; c++){
+   }
+   for(int c = 0; c < PACK_SIZE; c++)
+    {
         cards[c] = temp[c];
     }
-    
-    count++;
+
+   count++;
+    }
 }
 
 // EFFECTS: returns true if there are no more cards left in the pack
 bool Pack::empty() const
 {
-    if (next == 24) return true;
+    if (next == PACK_SIZE) return true;
 
     return false;
 }
