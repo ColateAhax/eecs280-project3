@@ -59,8 +59,10 @@ bool SimplePlayer::make_trump(const Card &upcard, bool is_dealer,
 //EFFECTS   adds one card to hand and removes one card from hand.
 void SimplePlayer::add_and_discard(const Card &upcard)
 {
+  hand.push_back(upcard);
+
   int comparing = 0;
-  for(int i = 0; i < hand.size(); i++)
+  for(int i = 1; i < hand.size(); i++)
   {
     if(Card_less(hand[i], hand[comparing], upcard.get_suit()))
     {
@@ -68,7 +70,6 @@ void SimplePlayer::add_and_discard(const Card &upcard)
     }
   }
   hand.erase(hand.begin() + comparing);
-  hand.push_back(upcard);
 }
 
 //REQUIRES  has at least one card

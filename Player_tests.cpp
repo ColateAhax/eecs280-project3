@@ -69,9 +69,36 @@ TEST(test_simple_player_make_trump)
 // virtual void add_and_discard(const Card &upcard) = 0;
 TEST(test_simple_player_add_and_discard)
 {
+    Card upCard(QUEEN, SPADES);
+
     Player * simple_Player = Player_factory("Simple Play", "Simple");
 
-    delete simple_Player;
+    simple_Player->add_card(Card(ACE, CLUBS));
+    simple_Player->add_card(Card(KING, CLUBS));
+    simple_Player->add_card(Card(QUEEN, CLUBS));
+    simple_Player->add_card(Card(JACK, CLUBS));
+    simple_Player->add_card(Card(TEN, CLUBS)); //worst card
+
+    simple_Player->add_and_discard(upCard);
+    //led card returns lowest non trump card in deck
+    //so it should not return ten of clubs
+    ASSERT_FALSE(simple_Player->lead_card(DIAMONDS) == Card(TEN, CLUBS));
+
+    Card upCard2 (NINE, SPADES);
+
+    Player * simple_Player2 = Player_factory("Simple Play", "Simple");
+    simple_Player2->add_card(Card(ACE, CLUBS)); //right bower
+    simple_Player2->add_card(Card(KING, CLUBS)); //left bower
+    simple_Player2->add_card(Card(QUEEN, CLUBS)); //trump
+    simple_Player2->add_card(Card(JACK, CLUBS)); //trump
+    simple_Player2->add_card(Card(TEN, CLUBS)); //trump
+
+    simple_Player2->add_and_discard(upCard2);
+    //led card returns lowest non trump card in deck
+    //so it should discard the upcard as if it hadnt picked it up
+    ASSERT_FALSE(simple_Player2->lead_card(DIAMONDS) == Card(NINE, SPADES));
+
+    delete simple_Player2;
 }
 
 // //REQUIRES Player has at least one card
