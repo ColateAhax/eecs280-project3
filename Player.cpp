@@ -51,7 +51,6 @@ void SimplePlayer::add_card(const Card &c)
 bool SimplePlayer::make_trump(const Card &upcard, bool is_dealer,
                         int round, Suit &order_up_suit) const
 {
-  //RHEA
   return false;
 }
 
@@ -77,7 +76,7 @@ void SimplePlayer::add_and_discard(const Card &upcard)
 //  "Lead" means to play the first Card in a trick.  The card
 //  is removed the player's hand.
 Card SimplePlayer::lead_card(Suit trump)
-{ //RHEA
+{
   bool has_all_trumps = true;
   vector<int> index_non_trump;
   Card c;
@@ -226,109 +225,131 @@ Card SimplePlayer::play_card(const Card &led_card, Suit trump)
 
 //-----------------------------------------------------
 
-//i commented everything down here so it would compile
-//you can uncomment everything from down here if you
-//wanna start on Human Player
+//Human Player Class
 
 //-----------------------------------------------------
 
 
 
-// //for human player
-// class HumanPlayer : public Player 
-// {
-//   public:
-//     HumanPlayer(const std::string name) :name(name){};
+//for human player
+class HumanPlayer : public Player 
+{
+  public:
+    HumanPlayer(const std::string name);
 
-//     const std::string & get_name() const override;
+    const std::string & get_name() const override;
 
-//     void add_card(const Card &c) override;
-//     bool make_trump(const Card &upcard, bool is_dealer,
-//                               int round, Suit &order_up_suit) const override;
-//     void add_and_discard(const Card &upcard) override;
-//     Card lead_card(Suit trump) override;
-//     Card play_card(const Card &led_card, Suit trump) override;
-//   private:
-//     std::string name;
-// };
+    void add_card(const Card &c) override;
+    bool make_trump(const Card &upcard, bool is_dealer,
+                              int round, Suit &order_up_suit) const override;
+    void add_and_discard(const Card &upcard) override;
+    Card lead_card(Suit trump) override;
+    Card play_card(const Card &led_card, Suit trump) override;
+    void print_hand() const;
+    string decision() const;
+  private:
+    std::string name;
+    vector<Card> hand;
+};
 
-// HumanPlayer::HumanPlayer(const std::string name)
-// :name(name){};
+HumanPlayer::HumanPlayer(const std::string name)
+:name(name){};
 
-// const std::string & HumanPlayer::get_name() const
-// {
-//   return name;
-// }
+void HumanPlayer::print_hand() const
+{
+  if(hand.empty()) cout << "Hand is Empty";
+  else
+  {
+    cout << "\nYour hand is the following: " << endl;
 
-// //REQUIRES player has less than MAX_HAND_SIZE cards
-// ///EFFECTS  adds Card c to 's hand
-// void HumanPlayer::add_card(const Card &c)
-// {
-//   //
-// }
+    for (int i = 0; i < hand.size(); i++)
+    {
+      cout << hand[i] << endl;
+    }
+  }
+}
 
-// //REQUIRES round is 1 or 2
-// //MODIFIES order_up_suit
-// //EFFECTS If  wishes to order up a trump suit then return true and
-// //  change order_up_suit to desired suit.  If  wishes to pass, then do
-// //  not modify order_up_suit and return false.
-// bool HumanPlayer::make_trump(const Card &upcard, bool is_dealer,
-//                         int round, Suit &order_up_suit) const
-// {
-//   // RHEA
-// }
+string HumanPlayer::decision() const
+{
+  string str;
+  cin >> str;
+  return str;
+}
 
-// //REQUIRES  has at least one card
-// //EFFECTS   adds one card to hand and removes one card from hand.
-// void HumanPlayer::add_and_discard(const Card &upcard)
-// {
-//   //
-// }
+const std::string & HumanPlayer::get_name() const
+{
+  return name;
+}
 
-// //REQUIRES  has at least one card
-// //EFFECTS  Leads one Card from 's hand according to their strategy
-// //  "Lead" means to play the first Card in a trick.  The card
-// //  is removed the player's hand.
-// Card HumanPlayer::lead_card(Suit trump)
-// {
-//   // RHEA
-// }
+//REQUIRES player has less than MAX_HAND_SIZE cards
+///EFFECTS  adds Card c to 's hand
+void HumanPlayer::add_card(const Card &c)
+{
+  //
+}
 
-// //REQUIRES  has at least one card
-// //EFFECTS  Plays one Card from 's hand according to their strategy.
-// //  The card is removed from the player's hand.
-// Card HumanPlayer::play_card(const Card &led_card, Suit trump)
-// {
-//   //
-// }
+//REQUIRES round is 1 or 2
+//MODIFIES order_up_suit
+//EFFECTS If  wishes to order up a trump suit then return true and
+//  change order_up_suit to desired suit.  If  wishes to pass, then do
+//  not modify order_up_suit and return false.
+bool HumanPlayer::make_trump(const Card &upcard, bool is_dealer,
+                        int round, Suit &order_up_suit) const
+{
+  print_hand();
+  cout << "Human player: " << name << ", please enter a suit, or \"pass\":\n";
+  string input = decision();
+  if (input == "pass") return false;
+  order_up_suit = string_to_suit(input);
+  return true;
+}
+
+//REQUIRES  has at least one card
+//EFFECTS   adds one card to hand and removes one card from hand.
+void HumanPlayer::add_and_discard(const Card &upcard)
+{
+  cout << "Upcard: " << upcard << endl;
+  std::sort(hand.begin(), hand.end());
+  print_hand();
+  cout << "Discard upcard: [-1]\n";
+  string input = decision();
+  if (input == "-1") return;
+  cout << "Human player " << name << ", please select a card to discard:\n";
+  Card selected_card(string_to_rank(input), string_to_suit(input));
+  for (int i = 0; i < hand.size(); i++)
+  {
+    if (hand[i] == selected_card)
+    {
+      hand.erase(hand.begin() + i);\
+      break;
+    }
+  }
+  hand.push_back(upcard);
+}
+
+//REQUIRES  has at least one card
+//EFFECTS  Leads one Card from 's hand according to their strategy
+//  "Lead" means to play the first Card in a trick.  The card
+//  is removed the player's hand.
+Card HumanPlayer::lead_card(Suit trump)
+{
+  return Card(TEN, SPADES);
+}
+
+//REQUIRES  has at least one card
+//EFFECTS  Plays one Card from 's hand according to their strategy.
+//  The card is removed from the player's hand.
+Card HumanPlayer::play_card(const Card &led_card, Suit trump)
+{
+  return Card(TEN, SPADES);
+}
 
 
+//-----------------------------------------------------
 
+//Vanilla Functions
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//-----------------------------------------------------
 
 
 
@@ -346,13 +367,13 @@ Player * Player_factory(const std::string &name,
     // The "new" keyword dynamically allocates an object.
     return new SimplePlayer(name);
   }
-  // // Repeat for each other type of Player 
-  // if (strategy == "Human") 
-  // {
-  //   // The "new" keyword dynamically allocates an object.
-  //   return new HumanPlayer(name);
-  // }
-  // Invalid strategy if we get here
+  // Repeat for each other type of Player 
+  if (strategy == "Human") 
+  {
+    // The "new" keyword dynamically allocates an object.
+    return new HumanPlayer(name);
+  }
+  //Invalid strategy if we get here
   assert(false);
   return nullptr;
 }

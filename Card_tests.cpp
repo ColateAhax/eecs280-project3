@@ -13,9 +13,9 @@ TEST(test_card_ctor_provided) {
 
 // Add more test cases here
 
-//EFFECTS Initializes Card to the Two of Spades//rhea
+//EFFECTS Initializes Card to the Two of Spades
 //Card();
-TEST(test_default_initializing)//tbl
+TEST(test_default_initializing)
 {
     Card newCard;
     ASSERT_EQUAL(newCard.get_rank(), TWO);
@@ -24,7 +24,7 @@ TEST(test_default_initializing)//tbl
 
 //EFFECTS Initializes Card to specified rank and suit
 // Card(Rank rank_in, Suit suit_in);
-TEST(test_overriden_initializing)//tbl
+TEST(test_overriden_initializing)
 {
     Rank r = ACE;
     Suit s = HEARTS;
@@ -35,7 +35,7 @@ TEST(test_overriden_initializing)//tbl
     ASSERT_EQUAL(newCard.get_suit(), s);
 }
 
-TEST(test_get_rank) //rhea
+TEST(test_get_rank)
 {
    
     Card newCard(ACE, HEARTS);
@@ -43,7 +43,7 @@ TEST(test_get_rank) //rhea
     ASSERT_EQUAL(newCard.get_rank(), ACE);
 }
 
-TEST(test_get_suit) //rhea
+TEST(test_get_suit)
 {
      Card newCard(ACE, HEARTS);
 
@@ -53,7 +53,7 @@ TEST(test_get_suit) //rhea
 //EFFECTS Returns the suit
   //HINT: the left bower is the trump suit!
   //Suit get_suit(Suit trump) const;
-TEST(test_get_suit_with_trump) //rhea
+TEST(test_get_suit_with_trump)
 {
     //checking if the left bower changes suits
     Card newCard(JACK, HEARTS);
@@ -69,7 +69,7 @@ TEST(test_get_suit_with_trump) //rhea
 
  //EFFECTS Returns true if card is a face card (Jack, Queen, King or Ace)
 //   bool is_face_or_ace() const;
-TEST(test_is_face_or_ace)//tbl
+TEST(test_is_face_or_ace)
 {
     Rank r = ACE;
     Suit s = HEARTS;
@@ -84,7 +84,7 @@ TEST(test_is_face_or_ace)//tbl
 
   //EFFECTS Returns true if card is the Jack of the trump suit
 //   bool is_right_bower(Suit trump) const;
-TEST(test_is_right_bower)//tbl
+TEST(test_is_right_bower)
 {
     //not a jack so always false
     Card card1(TEN, HEARTS);
@@ -101,7 +101,7 @@ TEST(test_is_right_bower)//tbl
 
   //EFFECTS Returns true if card is the Jack of the next suit
 //   bool is_left_bower(Suit trump) const;
-TEST(test_is_left_bower)//tbl
+TEST(test_is_left_bower)
 {
     //not a jack so always false
     Card card1(TEN, HEARTS);
@@ -119,7 +119,7 @@ TEST(test_is_left_bower)//tbl
   //EFFECTS Returns true if the card is a trump card.  All cards of the trump
   // suit are trump cards.  The left bower is also a trump card.
 //   bool is_trump(Suit trump) const;
-TEST(test_is_trump_suit)//rhea
+TEST(test_is_trump_suit)
 {
     //checking a trump card
     Suit trump = HEARTS;
@@ -170,7 +170,7 @@ TEST(test_istream_operator)
 // //EFFECTS Returns true if lhs is lower value than rhs.
 // //  Does not consider trump.
 // bool operator<(const Card &lhs, const Card &rhs);
-TEST(test_less_than_operator)//tbl
+TEST(test_less_than_operator)
 {
     Card card1(TEN, HEARTS);
     Card card2(ACE, HEARTS);
@@ -188,7 +188,7 @@ TEST(test_less_than_operator)//tbl
 // //EFFECTS Returns true if lhs is lower value than rhs or the same card as rhs.
 // //  Does not consider trump.
 // bool operator<=(const Card &lhs, const Card &rhs);
-TEST(test_less_than_or_equal_operator)//tbl
+TEST(test_less_than_or_equal_operator)
 {
     Card card1(TEN, HEARTS);
     Card card2(ACE, HEARTS);
@@ -205,7 +205,7 @@ TEST(test_less_than_or_equal_operator)//tbl
 // //EFFECTS Returns true if lhs is higher value than rhs.
 // //  Does not consider trump.
 // bool operator>(const Card &lhs, const Card &rhs);
-TEST(test_more_than_operator)//tbl
+TEST(test_more_than_operator)
 {
     Card card1(TEN, HEARTS);
     Card card2(ACE, HEARTS);
@@ -223,7 +223,7 @@ TEST(test_more_than_operator)//tbl
 // //EFFECTS Returns true if lhs is higher value than rhs or the same card as rhs.
 // //  Does not consider trump.
 // bool operator>=(const Card &lhs, const Card &rhs);
-TEST(test_more_than_or_equal_operator)//tbl
+TEST(test_more_than_or_equal_operator)
 {
     Card card1(TEN, HEARTS);
     Card card2(ACE, HEARTS);
@@ -272,7 +272,7 @@ TEST(test_not_equal_operator)
 
 // //EFFECTS returns the next suit, which is the suit of the same color
 // Suit Suit_next(Suit suit);
-TEST(test_next_suit)//tbl
+TEST(test_next_suit)
 {
     Suit spades(SPADES);
     //next suit of spades is clubs
@@ -298,7 +298,7 @@ TEST(test_next_suit)//tbl
 // //EFFECTS Returns true if a is lower value than b.  Uses trump to determine
 // // order, as described in the spec.
 // bool Card_less(const Card &a, const Card &b, Suit trump);
-TEST(test_less_card_basic)//rhea
+TEST(test_less_card_basic)
 {   
     //normal rank comparison
     Card cardB(TEN, HEARTS);
