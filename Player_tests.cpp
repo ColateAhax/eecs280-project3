@@ -57,12 +57,87 @@ TEST(test_simple_player_add_card)
 // //  not modify order_up_suit and return false.
 // virtual bool make_trump(const Card &upcard, bool is_dealer,
 //                         int round, Suit &order_up_suit) const = 0;
-TEST(test_simple_player_make_trump)
-{
-    Player * simple_Player = Player_factory("Simple Play", "Simple");
 
+TEST(test_simple_make_trump_SCREW_THE_DEALER)
+{
+   Player * simple_Player = Player_factory("Simple Play", "Simple");
+   Card upcard1(JACK, HEARTS);
+   Suit order_up = SPADES; //dummy to initialize (will be changed if make_trump is true)
+   ASSERT_TRUE(simple_Player->make_trump(upcard1, true, 2, order_up));
+   ASSERT_EQUAL(order_up, DIAMONDS);//checking if it set the right suit
+
+
+   // //SCREW THE DEALER TEST
+   // Card card1(JACK, HEARTS);
+   // Suit trump = HEARTS;
+ 
+ 
+   // trump = DIAMONDS;
+   // ASSERT_TRUE(simple_Player->make_trump(card1, true, 2, trump));
+
+
+   //Checking if its gonna change the suit when player has them in their hand
+
+
+   // ASSERT_TRUE(simple_Player->make_trump(card1, true, 1, trump));
+
+
+   // //checking if its going to work for left bower
+   // Card upCard(JACK, DIAMONDS);
+   // simple_Player->add_and_discard(upCard);
+   // ASSERT_TRUE(simple_Player->make_trump(upCard, true, 1, trump));
+   // delete simple_Player;
+   delete simple_Player;
+}
+TEST(test_simple_maketrump_round_1_change) 
+{   
+    Player * simple_Player = Player_factory("Simple Play", "Simple");
+    Suit trump = HEARTS;
+    simple_Player->add_card(Card(ACE, trump)); //face trump
+    simple_Player->add_card(Card(KING, trump)); //face trump
+    simple_Player->add_card(Card(QUEEN, SPADES)); //led suit
+    simple_Player->add_card(Card(NINE, SPADES)); //led suit
+    simple_Player->add_card(Card(QUEEN, CLUBS)); //random
+    Card upcard1(JACK, HEARTS);
+    Suit order_up = SPADES;
+    ASSERT_TRUE(simple_Player->make_trump(upcard1, true, 1, order_up));
+    ASSERT_EQUAL(order_up, trump);
+    delete simple_Player;
+    //checking if it set the right suit
+//nick can you run and see if it passes this new test
+//i gottchu /bang.
+//alr lemme submit
+}
+TEST(test_simple_makeTrump_leftBower) {
+    Player * simple_Player = Player_factory("Simple Play", "Simple");
+    Suit trump = HEARTS;
+    simple_Player->add_card(Card(ACE, trump)); //left trump
+    simple_Player->add_card(Card(JACK, Suit_next(trump))); //left bower
+    simple_Player->add_card(Card(QUEEN, SPADES)); //led suit
+    simple_Player->add_card(Card(NINE, SPADES)); //led suit
+    simple_Player->add_card(Card(QUEEN, CLUBS)); //random
+    Card upcard1(JACK, HEARTS);
+    Suit order_up = SPADES;
+    ASSERT_TRUE(simple_Player->make_trump(upcard1, true, 1, order_up));
+    ASSERT_EQUAL(order_up, trump);
     delete simple_Player;
 }
+
+TEST(test_simple_makeTrump_no_order_changed) {
+    Player * simple_Player = Player_factory("Simple Play", "Simple");
+    //Suit trump = HEARTS;
+    simple_Player->add_card(Card(ACE, CLUBS)); 
+    simple_Player->add_card(Card(JACK, CLUBS)); 
+    simple_Player->add_card(Card(QUEEN, SPADES)); //led suit
+    simple_Player->add_card(Card(NINE, SPADES)); //led suit
+    simple_Player->add_card(Card(QUEEN, CLUBS)); //random
+    Card upcard1(JACK, HEARTS);
+    Suit order_up = SPADES;
+    ASSERT_FALSE(simple_Player->make_trump(upcard1, true, 1, order_up));
+   //try again
+    delete simple_Player;
+}
+
 
 // //REQUIRES Player has at least one card
 // //EFFECTS  Player adds one card to hand and removes one card from hand.
@@ -175,58 +250,9 @@ TEST(test_simple_player_play_card)
 //HUMAN PLAYER TESTS
 //-------------------------------------------------
 
-// //EFFECTS returns player's name
-// virtual const std::string & get_name() const = 0;
-TEST(test_human_player_get_name)
-{
-    //
-}
-
-// //REQUIRES player has less than MAX_HAND_SIZE cards
-// //EFFECTS  adds Card c to Player's hand
-// virtual void add_card(const Card &c) = 0;
-TEST(test_human_player_add_card)
-{
-    //
-}
-
-// //REQUIRES round is 1 or 2
-// //MODIFIES order_up_suit
-// //EFFECTS If Player wishes to order up a trump suit then return true and
-// //  change order_up_suit to desired suit.  If Player wishes to pass, then do
-// //  not modify order_up_suit and return false.
-// virtual bool make_trump(const Card &upcard, bool is_dealer,
-//                         int round, Suit &order_up_suit) const = 0;
-TEST(test_human_player_make_trump)
-{
-    //
-}
-
-// //REQUIRES Player has at least one card
-// //EFFECTS  Player adds one card to hand and removes one card from hand.
-// virtual void add_and_discard(const Card &upcard) = 0;
-TEST(test_human_player_add_and_discard)
-{
-    //
-}
-
-// //REQUIRES Player has at least one card
-// //EFFECTS  Leads one Card from Player's hand according to their strategy
-// //  "Lead" means to play the first Card in a trick.  The card
-// //  is removed the player's hand.
-// virtual Card lead_card(Suit trump) = 0;
-TEST(test_human_player_lead_card)
-{
-    //
-}
-
-// //REQUIRES Player has at least one card
-// //EFFECTS  Plays one Card from Player's hand according to their strategy.
-// //  The card is removed from the player's hand.
-// virtual Card play_card(const Card &led_card, Suit trump) = 0;
-TEST(test_human_player_play_card)
-{
-    //
-}
+//from the spec sheet
+//We will autograde your Card_tests.cpp and Player_tests.cpp 
+//unit tests. Note that your player tests should only test 
+//the “simple player”, not the “human player”.
 
 TEST_MAIN()

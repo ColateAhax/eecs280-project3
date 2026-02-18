@@ -49,10 +49,49 @@ void SimplePlayer::add_card(const Card &c)
 //  change order_up_suit to desired suit.  If  wishes to pass, then do
 //  not modify order_up_suit and return false.
 bool SimplePlayer::make_trump(const Card &upcard, bool is_dealer,
-                        int round, Suit &order_up_suit) const
+                       int round, Suit &order_up_suit) const
 {
+  if (round == 1)
+  {
+    //seeing if hand has upcard
+    int count = 0;
+    Suit trump = upcard.get_suit();
+    for (int i = 0; i < hand.size(); i++) 
+    {
+      if((hand[i].is_trump(trump)) && (hand[i].is_face_or_ace()
+          || hand[i].is_left_bower(trump)
+          || hand[i].is_right_bower(trump)))
+      {
+        count++;
+      }
+    }
+    if (count >= 2)
+    {
+      order_up_suit = upcard.get_suit();
+      return true;
+    }
+  }
+  else
+  {
+    if(is_dealer)
+    {
+      order_up_suit = Suit_next(upcard.get_suit());
+      return true;
+    }
+    for (int i = 1; i < hand.size(); i++) 
+    {
+      if((hand[i].get_suit() == upcard.get_suit()) && (hand[i].is_face_or_ace()
+          || hand[i].is_left_bower(upcard.get_suit())
+          || hand[i].is_right_bower(upcard.get_suit())))
+      {
+        order_up_suit = Suit_next(upcard.get_suit());
+        return true;
+      }
+    }
+  }
   return false;
 }
+
 
 //REQUIRES  has at least one card
 //EFFECTS   adds one card to hand and removes one card from hand.
@@ -120,8 +159,7 @@ Card SimplePlayer::lead_card(Suit trump)
     for (int i = 1; i < hand.size(); i++)
     {
       //checks that current index is a non trump
-      if (find(index_non_trump.begin(), index_non_trump.end(), i)
-           == index_non_trump.end()) continue;
+      if (hand[i].is_trump(trump)) continue;
 
       Card current_card = hand[i];
 
