@@ -179,8 +179,10 @@ TEST(test_less_than_operator)//tbl
     //card 1 should be less than card 2
     ASSERT_TRUE(card1 < card2);
 
-    //card 2 and 3 should be equal so it returns false
-    ASSERT_FALSE(card2 < card3)
+    //card 2 and 3 have equal rank
+    //so hearts are greater than spades
+    //card 2 is bigger than card 3
+    ASSERT_FALSE(card2 < card3);
 }
 
 // //EFFECTS Returns true if lhs is lower value than rhs or the same card as rhs.
@@ -191,12 +193,13 @@ TEST(test_less_than_or_equal_operator)//tbl
     Card card1(TEN, HEARTS);
     Card card2(ACE, HEARTS);
     Card card3(ACE, SPADES);
+    Card card4(ACE, HEARTS);
 
     //card 1 should be less than card 2
     ASSERT_TRUE(card1 <= card2);
 
-    //card 2 and 3 should be equal so it returns true
-    ASSERT_TRUE(card2 <= card3)
+    //card 2 and 4 should be equal so its true
+    ASSERT_TRUE(card2 <= card4);
 }
 
 // //EFFECTS Returns true if lhs is higher value than rhs.
@@ -211,8 +214,10 @@ TEST(test_more_than_operator)//tbl
     //card 2 should be more than card 1
     ASSERT_TRUE(card2 > card1);
 
-    //card 2 and 3 should be equal so it returns false
-    ASSERT_FALSE(card2 > card3)
+    //card 2 and 3 have equal rank
+    //so hearts are greater than spades
+    //card 2 is bigger than card 3
+    ASSERT_TRUE(card2 > card3);
 }
 
 // //EFFECTS Returns true if lhs is higher value than rhs or the same card as rhs.
@@ -223,12 +228,13 @@ TEST(test_more_than_or_equal_operator)//tbl
     Card card1(TEN, HEARTS);
     Card card2(ACE, HEARTS);
     Card card3(ACE, SPADES);
+    Card card4(ACE, HEARTS);
 
     //card 2 should be more than card 1
     ASSERT_TRUE(card2 >= card1);
 
-    //card 2 and 3 should be equal so it returns true
-    ASSERT_TRUE(card2 >= card3)
+    //card 2 and 4 should be equal so it returns true
+    ASSERT_TRUE(card2 >= card4);
 }
 
 // //EFFECTS Returns true if lhs is same card as rhs.
@@ -325,6 +331,30 @@ TEST(test_less_card_basic)//rhea
 // bool Card_less(const Card &a, const Card &b, const Card &led_card, Suit trump);
 TEST(test_less_card_with_suit)
 {
-    //
+    Suit trump = SPADES;
+
+    //given
+    Card led_card(NINE, DIAMONDS);
+    //so this should be the priority in order
+    Card right_bower(JACK, trump);//right bower
+    Card left_bower(JACK, Suit_next(trump));//left bower
+    Card tp_suit_1(KING, trump);//trump suit in order of rank
+    Card tp_suit_2(QUEEN, trump);//trump suit in order of rank
+    Card led_suit_1(KING, led_card.get_suit());//led suit in order of rank
+    Card led_suit_2(QUEEN, led_card.get_suit());//led suit in order of rank
+    Card other_1(ACE, HEARTS);//everything else
+    Card other_2(KING, CLUBS);//everything else
+
+    //so this is the heirerchy a is less than b
+    //if its lower in the pyramid excluding the led card
+
+    //tests the bowers
+    ASSERT_TRUE(Card_less(left_bower, right_bower, led_card, trump));
+    ASSERT_FALSE(Card_less(right_bower, left_bower, led_card, trump));
+
+    ASSERT_TRUE(Card_less(other_1, led_suit_1, led_card, trump));
+    ASSERT_TRUE(Card_less(led_suit_2, led_suit_1, led_card, trump));
+    ASSERT_TRUE(Card_less(led_suit_1, tp_suit_1, led_card, trump));
+    ASSERT_FALSE(Card_less(tp_suit_2, led_suit_1, led_card, trump));
 }
 TEST_MAIN()

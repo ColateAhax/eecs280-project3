@@ -257,28 +257,14 @@ bool operator != (const Card &card_left, const Card &card_right)
 //  Does not consider trump.
 bool operator > (const Card &card_left, const Card &card_right)
 {
-  // //makes sure they not equal to each other
-  // if (card_left == card_right) return false;
-
-  // //checks if one of them is the right bower
-  // if (card_left.is_right_bower(card_left.get_suit())) return true;
-  // if (card_right.is_right_bower(card_right.get_suit())) return false;
-
-  // //checks if one of them is left boew
-  // if (card_left.is_left_bower(card_left.get_suit())) return true;
-  // if (card_right.is_left_bower(card_right.get_suit())) return false;
-
-  // //checks if left card if trump and right isnt
-  // if (card_left.is_trump(card_left.get_suit()) && 
-  //     !card_right.is_trump(card_right.get_suit())) return true;
-      
-  // //checks if right card if trump and left isnt
-  // if (card_left.is_trump(card_left.get_suit()) && 
-  //     !card_right.is_trump(card_right.get_suit())) return false;
-
-  // return (card_left.get_rank() > card_right.get_rank());
-
   if (card_left.get_rank() > card_right.get_rank()) return true;
+  else if(card_left.get_rank() == card_right.get_rank())
+  {
+    int suit_left = card_left.get_suit();
+    int suit_right = card_right.get_suit();
+
+    return suit_left > suit_right;
+  }
   else return false;
 }
 
@@ -286,17 +272,24 @@ bool operator < (const Card &card_left, const Card &card_right)
 {//GENUIUS
   // return !(card_left > card_right) && card_left != card_right;
   if (card_left.get_rank() < card_right.get_rank()) return true;
+  else if(card_left.get_rank() == card_right.get_rank())
+  {
+    int suit_left = card_left.get_suit();
+    int suit_right = card_right.get_suit();
+
+    return suit_right > suit_left;
+  }
   else return false;
 }
 
 bool operator <= (const Card &card_left, const Card &card_right)
 {//so stylish
-  return card_left < card_right || card_left.get_rank() == card_right.get_rank();
+  return card_left < card_right || card_left == card_right;
 }
 
 bool operator >= (const Card &card_left, const Card &card_right)
 {
-  return (card_left > card_right || card_left.get_rank() == card_right.get_rank());
+  return (card_left > card_right || card_left == card_right);
 }
 
 //EFFECTS Prints Card to stream, for example "Two of Spades"

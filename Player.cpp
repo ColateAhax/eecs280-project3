@@ -54,7 +54,7 @@ const std::string & SimplePlayer::get_name() const
 ///EFFECTS  adds Card c to 's hand
 void SimplePlayer::add_card(const Card &c)
 {
-  hand.push_back(c);
+//
 }
 
 //REQUIRES round is 1 or 2
@@ -65,14 +65,21 @@ void SimplePlayer::add_card(const Card &c)
 bool SimplePlayer::make_trump(const Card &upcard, bool is_dealer,
                         int round, Suit &order_up_suit) const
 {
-  //
+  //RHEA
 }
 
 //REQUIRES  has at least one card
 //EFFECTS   adds one card to hand and removes one card from hand.
 void SimplePlayer::add_and_discard(const Card &upcard)
 {
-  //
+  hand.push_back(upcard);
+  int comparing = 0;
+  for(int i = 0; i < hand.size(); i++){
+    if(Card_less(hand[i], hand[comparing], upcard.get_suit())){
+      comparing = i;
+    }
+  }
+  hand.erase(hand.begin() + comparing);
 }
 
 //REQUIRES  has at least one card
@@ -80,9 +87,25 @@ void SimplePlayer::add_and_discard(const Card &upcard)
 //  "Lead" means to play the first Card in a trick.  The card
 //  is removed the player's hand.
 Card SimplePlayer::lead_card(Suit trump)
-{
-  //
+{ //RHEA
+  vector<Card> temp;
+  Card c;
+
+  //checking if all of them are trump cards
+  for(int i = 0; i < hand.size(); i++){
+    if(!(hand[i].is_trump(trump))){
+      temp.push_back(hand[i]);
+
+      for(int j = 0; j < temp.size(); j++){
+        if(Card_less(c, hand[i], trump)){
+          c = hand[i];
+        }
+      }
+    }
+      
+  }
 }
+
 
 //REQUIRES  has at least one card
 //EFFECTS  Plays one Card from 's hand according to their strategy.
@@ -143,7 +166,7 @@ void HumanPlayer::add_card(const Card &c)
 bool HumanPlayer::make_trump(const Card &upcard, bool is_dealer,
                         int round, Suit &order_up_suit) const
 {
-  //
+  // RHEA
 }
 
 //REQUIRES  has at least one card
@@ -159,7 +182,7 @@ void HumanPlayer::add_and_discard(const Card &upcard)
 //  is removed the player's hand.
 Card HumanPlayer::lead_card(Suit trump)
 {
-  //
+  // RHEA
 }
 
 //REQUIRES  has at least one card
