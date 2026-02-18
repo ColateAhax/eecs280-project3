@@ -245,9 +245,9 @@ class HumanPlayer : public Player
     void add_and_discard(const Card &upcard) override;
     Card lead_card(Suit trump) override;
     Card play_card(const Card &led_card, Suit trump) override;
-    void print_hand() const;
     string decision() const;
   private:
+    void print_hand() const;
     std::string name;
     vector<Card> hand;
 };
@@ -255,19 +255,13 @@ class HumanPlayer : public Player
 HumanPlayer::HumanPlayer(const std::string name)
 :name(name){};
 
-void HumanPlayer::print_hand() const
+void HumanPlayer::print_hand() const 
 {
-  if(hand.empty()) cout << "Hand is Empty";
-  else
-  {
-    cout << "\nYour hand is the following: " << endl;
-
-    for (int i = 0; i < hand.size(); i++)
-    {
-      cout << hand[i] << endl;
-    }
-  }
+  for (size_t i=0; i < hand.size(); ++i)
+    cout << "Human player " << name << "'s hand: "
+         << "[" << i << "] " << hand[i] << "\n";
 }
+
 
 string HumanPlayer::decision() const
 {
@@ -285,7 +279,7 @@ const std::string & HumanPlayer::get_name() const
 ///EFFECTS  adds Card c to 's hand
 void HumanPlayer::add_card(const Card &c)
 {
-  //
+  hand.push_back(c);
 }
 
 //REQUIRES round is 1 or 2
@@ -312,18 +306,10 @@ void HumanPlayer::add_and_discard(const Card &upcard)
   std::sort(hand.begin(), hand.end());
   print_hand();
   cout << "Discard upcard: [-1]\n";
-  string input = decision();
-  if (input == "-1") return;
+  int input = stoi(decision());
+  if (input == -1) return;
   cout << "Human player " << name << ", please select a card to discard:\n";
-  Card selected_card(string_to_rank(input), string_to_suit(input));
-  for (int i = 0; i < hand.size(); i++)
-  {
-    if (hand[i] == selected_card)
-    {
-      hand.erase(hand.begin() + i);\
-      break;
-    }
-  }
+  hand.erase(hand.begin() + input);
   hand.push_back(upcard);
 }
 
@@ -333,7 +319,12 @@ void HumanPlayer::add_and_discard(const Card &upcard)
 //  is removed the player's hand.
 Card HumanPlayer::lead_card(Suit trump)
 {
-  return Card(TEN, SPADES);
+  print_hand();
+  cout << "Human player " << name << ", please select a card:\n";
+  int input = stoi(decision());
+  Card selected = hand[input];
+  hand.erase(hand.begin() + input);
+  return selected;
 }
 
 //REQUIRES  has at least one card
@@ -341,7 +332,12 @@ Card HumanPlayer::lead_card(Suit trump)
 //  The card is removed from the player's hand.
 Card HumanPlayer::play_card(const Card &led_card, Suit trump)
 {
-  return Card(TEN, SPADES);
+  print_hand();
+  cout << "Human player " << name << ", please select a card:\n";
+  int input = stoi(decision());
+  Card selected = hand[input];
+  hand.erase(hand.begin() + input);
+  return selected;
 }
 
 
