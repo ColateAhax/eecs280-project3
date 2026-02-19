@@ -182,6 +182,7 @@ TEST(test_simple_player_add_and_discard)
     //led card returns lowest non trump card in deck
     //so it should not return ten of clubs
     ASSERT_FALSE(simple_Player->lead_card(DIAMONDS) == Card(TEN, CLUBS));
+    delete simple_Player;
 
     Card upCard2 (NINE, SPADES);
 
@@ -211,9 +212,14 @@ TEST(test_simple_player_add_and_discard)
 
     simple_Player3->add_and_discard(upCard3);
 
-    // Ace of Spades trump should have been kept
-    // verify by leading — should get a hearts card, not error out
-    ASSERT_FALSE(simple_Player3->lead_card(SPADES) == Card(NINE, HEARTS)); // nine was discarded
+    // drain non-trump cards
+    simple_Player3->lead_card(SPADES); // JACK of HEARTS
+    simple_Player3->lead_card(SPADES); // QUEEN of HEARTS
+    simple_Player3->lead_card(SPADES); // KING of HEARTS
+    simple_Player3->lead_card(SPADES); // TEN of HEARTS
+
+    // only ACE of SPADES should remain (NINE was discarded, not ACE)
+    ASSERT_EQUAL(simple_Player3->lead_card(SPADES), Card(ACE, SPADES));
     delete simple_Player3;
 
 
