@@ -103,10 +103,6 @@ TEST(test_simple_maketrump_round_1_change)
     ASSERT_TRUE(simple_Player->make_trump(upcard1, true, 1, order_up));
     ASSERT_EQUAL(order_up, trump);
     delete simple_Player;
-    //checking if it set the right suit
-//nick can you run and see if it passes this new test
-//i gottchu /bang.
-//alr lemme submit
 }
 TEST(test_simple_makeTrump_leftBower) {
     Player * simple_Player = Player_factory("Simple Play", "Simple");
@@ -136,6 +132,34 @@ TEST(test_simple_makeTrump_no_order_changed) {
     ASSERT_FALSE(simple_Player->make_trump(upcard1, true, 1, order_up));
    //try again
     delete simple_Player;
+}
+
+TEST(test_make_a_trump_part_2)
+{
+    // only 1 face trump card, should NOT order up
+    Player * simple_Player = Player_factory("Test", "Simple");
+    simple_Player->add_card(Card(ACE, HEARTS));   // only 1 face trump
+    simple_Player->add_card(Card(NINE, SPADES));
+    simple_Player->add_card(Card(TEN, SPADES));
+    simple_Player->add_card(Card(NINE, CLUBS));
+    simple_Player->add_card(Card(TEN, DIAMONDS));
+    Suit order_up = SPADES;
+    ASSERT_FALSE(simple_Player->make_trump(Card(TEN, HEARTS), false, 1, order_up));
+    ASSERT_EQUAL(order_up, SPADES); // should be unchanged
+    delete simple_Player;
+
+
+    // no face cards of next suit, not dealer, should pass
+    Player * simple_Player2 = Player_factory("Test", "Simple");
+    simple_Player2->add_card(Card(NINE, DIAMONDS));
+    simple_Player2->add_card(Card(TEN, DIAMONDS));
+    simple_Player2->add_card(Card(NINE, CLUBS));
+    simple_Player2->add_card(Card(TEN, CLUBS));
+    simple_Player2->add_card(Card(NINE, SPADES));
+    order_up = SPADES;
+    ASSERT_FALSE(simple_Player2->make_trump(Card(TEN, HEARTS), false, 2, order_up));
+    ASSERT_EQUAL(order_up, SPADES); // unchanged
+    delete simple_Player2;
 }
 
 
@@ -174,8 +198,80 @@ TEST(test_simple_player_add_and_discard)
     ASSERT_FALSE(simple_Player2->lead_card(DIAMONDS) == Card(NINE, SPADES));
 
     delete simple_Player2;
+
+    // upcard is high trump — should be KEPT, lowest non-trump discarded
+    Player * simple_Player3 = Player_factory("Simple Play", "Simple");
+    Card upCard3(ACE, SPADES); // high trump
+
+    simple_Player3->add_card(Card(NINE, HEARTS));  // lowest non-trump — should be discarded
+    simple_Player3->add_card(Card(TEN, HEARTS));
+    simple_Player3->add_card(Card(KING, HEARTS));
+    simple_Player3->add_card(Card(QUEEN, HEARTS));
+    simple_Player3->add_card(Card(JACK, HEARTS));
+
+    simple_Player3->add_and_discard(upCard3);
+
+    // Ace of Spades trump should have been kept
+    // verify by leading — should get a hearts card, not error out
+    ASSERT_FALSE(simple_Player3->lead_card(SPADES) == Card(NINE, HEARTS)); // nine was discarded
+    delete simple_Player3;
+
+
+    Player * simple_Player4 = Player_factory("Simple Play", "Simple");
+    Card upCard4(ACE, SPADES); // high trump
+
+    simple_Player4->add_card(Card(NINE, HEARTS));  // lowest non-trump — should be discarded
+
+    simple_Player4->add_and_discard(upCard4);
+
+    // Ace of Spades trump should have been kept
+    // verify by leading — should get a hearts card, not error out
+    ASSERT_FALSE(simple_Player4->lead_card(SPADES) == Card(NINE, HEARTS)); // nine was discarded
+    ASSERT_FALSE(simple_Player4->play_card(Card(NINE, HEARTS), HEARTS) == Card(NINE, HEARTS));
+    //card should have already discarded this card so it shouldnt return it
+    delete simple_Player4;
 }
 
+TEST(test_simple_player_add_and_discard_part_2)
+{
+    //verifies the right card was discarded using same trump
+    Player * simple_Player = Player_factory("Simple Play", "Simple");
+    Card upCard(ACE, SPADES); // trump = SPADES
+
+    simple_Player->add_card(Card(NINE, HEARTS));  // lowest non-trump — discarded
+    simple_Player->add_card(Card(TEN, HEARTS));
+    simple_Player->add_card(Card(KING, HEARTS));
+    simple_Player->add_card(Card(QUEEN, HEARTS));
+    simple_Player->add_card(Card(JACK, HEARTS));
+
+    simple_Player->add_and_discard(upCard);
+
+    // drain non-trump cards first
+    simple_Player->lead_card(SPADES); // JACK of HEARTS
+    simple_Player->lead_card(SPADES); // QUEEN of HEARTS
+    simple_Player->lead_card(SPADES); // KING of HEARTS
+    simple_Player->lead_card(SPADES); // TEN of HEARTS
+
+    // only ACE of SPADES should remain
+    ASSERT_EQUAL(simple_Player->lead_card(SPADES), Card(ACE, SPADES));
+    delete simple_Player;
+
+    // left bower should be treated as trump and kept over non-trump
+    Player * simple_Player2 = Player_factory("Simple Play", "Simple");
+    Card upCard2(TEN, SPADES); // trump = SPADES
+
+    simple_Player2->add_card(Card(JACK, CLUBS));  // left bower — trump, should be KEPT
+    simple_Player2->add_card(Card(NINE, HEARTS)); // lowest non-trump — should be discarded
+    simple_Player2->add_card(Card(TEN, HEARTS));
+    simple_Player2->add_card(Card(KING, HEARTS));
+    simple_Player2->add_card(Card(QUEEN, HEARTS));
+
+    simple_Player2->add_and_discard(upCard2);
+
+    // left bower should still be in hand
+    ASSERT_FALSE(simple_Player2->lead_card(SPADES) == Card(NINE, HEARTS)); // nine was discarded not left bower
+    delete simple_Player2;
+}
 // //REQUIRES Player has at least one card
 // //EFFECTS  Leads one Card from Player's hand according to their strategy
 // //  "Lead" means to play the first Card in a trick.  The card
@@ -207,6 +303,15 @@ TEST(test_simple_player_lead_card)
     //since player has all trumps it should return right bower
     ASSERT_TRUE(simple_Player2->lead_card(trump) == Card(JACK, trump));
     delete simple_Player2;
+
+
+    // left bower should be treated as trump, not led as non-trump
+    Player * simple_Player3 = Player_factory("Simple Play", "Simple");
+    simple_Player3->add_card(Card(JACK, DIAMONDS)); // left bower when trump=HEARTS
+    simple_Player3->add_card(Card(NINE, CLUBS));    // highest non-trump
+ 
+    ASSERT_EQUAL(simple_Player3->lead_card(HEARTS), Card(NINE, CLUBS)); // NOT the left bower
+    delete simple_Player3;
 }
 
 // //REQUIRES Player has at least one card
@@ -242,6 +347,17 @@ TEST(test_simple_player_play_card)
     //which is a Nine of Hearts
     ASSERT_TRUE(simple_Player2->play_card(led_card, trump) == Card(NINE, trump));
     delete simple_Player2;
+
+
+    // left bower should follow suit when trump is led
+    Player * simple_Player3 = Player_factory("Simple Play", "Simple");
+    simple_Player3->add_card(Card(JACK, DIAMONDS)); // left bower (trump=HEARTS)
+    simple_Player3->add_card(Card(NINE, CLUBS));
+
+    // led suit is trump
+    // left bower follows trump
+    ASSERT_EQUAL(simple_Player3->play_card(Card(NINE, HEARTS), HEARTS), Card(JACK, DIAMONDS));
+    delete simple_Player3;
 }
 
 
