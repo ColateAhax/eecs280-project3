@@ -14,18 +14,25 @@ class Game
     vector<std::string> names_Players, vector<std::string> types_of_Players);
     
     void play();
+    void deletePlayers();
 
   private:
     vector<Player *> players;
     Pack pack;
+    Suit trump;
 
     bool shuffle_on;
     int points_to_win;
 
+    int dealer = 0;
+    int team_1_score = 0;
+    int team_2_score = 0;
+
     void shuffle();
-    void deal(/* ... */);
-    void make_trump(/* ... */);
-    void play_hand(/* ... */);
+    void deal();
+    void deal(Player *);
+    void make_trump(Suit &order_up_suit, Card &upcard);
+    void play_hand();
 };
 
 Game::Game(bool shuffle_on, int points_to_win, std::istream& pack_input,
@@ -48,30 +55,136 @@ vector<std::string> names_Players, vector<std::string> types_of_Players)
 
 void Game::shuffle()
 {
-  //
+  pack.shuffle();
 }
 
-void Game::deal(/* ... */)
+void Game::deal(/*player, */)
 {
-  //
+  //deal 3-2-3-2 cards then 2-3-2-3 cards, for a total of 5 cards
+  
+  //frst pattern: deal 3-2-3-2 cards
+  for (int i = 0; i < 4; i++)
+  {
+    //even turn deals 3
+    if (i % 2 == 0)
+    {
+      players[i]->add_card(pack.deal_one());
+      players[i]->add_card(pack.deal_one());
+      players[i]->add_card(pack.deal_one());
+    }
+
+    //odd turn deals 2
+    else
+    {
+      players[i]->add_card(pack.deal_one());
+      players[i]->add_card(pack.deal_one());
+    }
+  }
+
+  //second pattern: deals 2-3-2-3 cards
+  for (int i = 0; i < 4; i++)
+  {
+    //even turn deals 2
+    if (i % 2 == 0)
+    {
+      players[i]->add_card(pack.deal_one());
+      players[i]->add_card(pack.deal_one());
+    }
+
+    //odd turn deals 3
+    else
+    {
+      players[i]->add_card(pack.deal_one());
+      players[i]->add_card(pack.deal_one());
+      players[i]->add_card(pack.deal_one());
+    }
+  }
 }
 
-void Game::make_trump(/* ... */)
+void Game::deal(Player * player)
 {
-  //
+  player->add_card(pack.deal_one());
 }
 
-void Game::play_hand(/* ... */)
+void Game::make_trump(Suit &order_up_suit, Card &upcard)
+{ 
+ //round 1 
+  int dealer_number = 0;
+  int round_number = 0;
+  
+  Card upcard = pack.deal_one();
+
+  // Player * eldest_hand = players[dealer_number - 1];
+  // Player * dealer = players[dealer_number]; 
+  bool is_dealer = true;
+  
+  for(int i = players.size() - 1; i >= 0; i--)
+  {
+    if (dealer_number == i)
+    {
+      is_dealer = true;
+    }
+    if(players[i]->make_trump(upcard, is_dealer, round_number, order_up_suit)) return;
+
+    is_dealer = false;
+  }
+  is_dealer = false;
+
+  //round 2
+  //int eldest_hand_num = players.size() - 1; //eldest hand
+  round_number = 2;
+  if (round_number == 2)
+  {
+    for(int i = players.size(); i >= 0; i--)
+    {
+      if (dealer_number == i)
+      {
+        is_dealer = true;
+        players[dealer_number]->make_trump(upcard, is_dealer, round_number, order_up_suit);
+        return;
+      }
+
+      if(players[i]->make_trump(upcard, is_dealer, round_number, order_up_suit)) return;
+
+      is_dealer = false;
+    }
+    
+    is_dealer = false;  
+  }
+}
+
+void Game::play_hand()
 {
-  //
+  Card led_card = players[dealer]->lead_card(trump);
+
+  for (int i = 0; i < players.size(); i++)
+  {
+    if (i == dealer) continue;
+    players[i]->play_card(led_card, trump);
+  }
 }
 
 void Game::play()
 {
-  //
+  while (team_1_score < points_to_win &&
+         team_2_score < points_to_win)
+  {
+    deal();
+    Card upcard = pack.deal_one();
+    Suit suit_order_up;
+    make_trump(suit_order_up, upcard);
+    play_hand();
+    dealer++;
+  }
 }
 
-
+void Game::deletePlayers()
+{
+  for (int i = 0; i < players.size(); i++)
+  {
+    delete players[i];
+  }
+}
 
 
 //-------------------------------------------
@@ -86,14 +199,14 @@ int main(int argc, char* argv[])
 {
   cout << "Hello World" << endl;
   //checks that it has the 12 arguements for sample 4 players
-  if (argc != 12)
-  {
-    cout << "Usage: euchre.exe PACK_FILENAME [shuffle|noshuffle] "
-    << "POINTS_TO_WIN NAME1 TYPE1 NAME2 TYPE2 NAME3 TYPE3 "
-    << "NAME4 TYPE4" << endl;
+  // if (argc != 12)
+  // {
+  //   cout << "Usage: euchre.exe PACK_FILENAME [shuffle|noshuffle] "
+  //   << "POINTS_TO_WIN NAME1 TYPE1 NAME2 TYPE2 NAME3 TYPE3 "
+  //   << "NAME4 TYPE4" << endl;
     
-    return 1;
-  }
+  //   return 1;
+  // }
 
   //sets the fileIn name and attempts to open it
   std::string fileIn = argv[1];
@@ -157,4 +270,5 @@ int main(int argc, char* argv[])
   }
 
   Game game(shuffle_on, points_to_win_game, is, names_Players, types_of_Players);
+  game.deletePlayers();
 }
