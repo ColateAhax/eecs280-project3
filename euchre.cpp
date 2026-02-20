@@ -3,7 +3,84 @@
 #include <cassert>
 #include <vector>
 #include <array>
+#include "Player.hpp"
+#include "Pack.hpp"
 using namespace std;
+
+class Game
+{
+  public:
+    Game(bool shuffle_on, int points_to_win, std::istream& pack_input,
+    vector<std::string> names_Players, vector<std::string> types_of_Players);
+    
+    void play();
+
+  private:
+    vector<Player *> players;
+    Pack pack;
+
+    bool shuffle_on;
+    int points_to_win;
+
+    void shuffle();
+    void deal(/* ... */);
+    void make_trump(/* ... */);
+    void play_hand(/* ... */);
+};
+
+Game::Game(bool shuffle_on, int points_to_win, std::istream& pack_input,
+vector<std::string> names_Players, vector<std::string> types_of_Players)
+
+:pack(pack_input), shuffle_on(shuffle_on), points_to_win(points_to_win)
+
+{
+  if (names_Players.size() != types_of_Players.size())
+  {
+    cout << "Different Numbers of Players and Types" << endl;
+    assert(false);
+  }
+
+  for (int i = 0; i < names_Players.size(); i++)
+  {
+    players.push_back(Player_factory(names_Players[i], types_of_Players[i]));
+  }
+}
+
+void Game::shuffle()
+{
+  //
+}
+
+void Game::deal(/* ... */)
+{
+  //
+}
+
+void Game::make_trump(/* ... */)
+{
+  //
+}
+
+void Game::play_hand(/* ... */)
+{
+  //
+}
+
+void Game::play()
+{
+  //
+}
+
+
+
+
+//-------------------------------------------
+
+//      READS THE ARGUEMENT AND FILE
+
+//-------------------------------------------
+
+
 
 int main(int argc, char* argv[])
 {
@@ -44,7 +121,7 @@ int main(int argc, char* argv[])
 
   //sets the points to win the name
   int points_to_win_game = stoi(argv[3]);
-  if(points_to_win_game >= 1 || points_to_win_game <= 100)
+  if(points_to_win_game <= 1 && points_to_win_game >= 100)
   {
     cout << "Usage: euchre.exe PACK_FILENAME [shuffle|noshuffle] "
     << "POINTS_TO_WIN NAME1 TYPE1 NAME2 TYPE2 NAME3 TYPE3 "
@@ -78,4 +155,6 @@ int main(int argc, char* argv[])
       types_of_Players.push_back(str);
     }
   }
+
+  Game game(shuffle_on, points_to_win_game, is, names_Players, types_of_Players);
 }
