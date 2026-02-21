@@ -27,6 +27,7 @@ class Game
     int dealer = 0;
     int team_1_score = 0;
     int team_2_score = 0;
+    int made_trump = 0; //either team 1 or 2
 
     void shuffle();
     void deal();
@@ -121,11 +122,14 @@ void Game::make_trump(Suit &order_up_suit, Card &upcard)
     if(players[curr]->make_trump(upcard, dealer == curr,
        round_number, order_up_suit))
     {
+      if (curr % 2 == 0) made_trump = 1;
+      else made_trump = 2;
       trump = order_up_suit;
       players[dealer]->add_and_discard(upcard);
+      cout << players[curr]->get_name() << " orders up " << trump << "\n" << endl;
       return;
     }
-
+    cout << players[curr]->get_name() << " passes" << endl;
   }
 
   //round 2
@@ -138,9 +142,13 @@ void Game::make_trump(Suit &order_up_suit, Card &upcard)
     if(players[curr]->make_trump(upcard, dealer == curr,
        round_number, order_up_suit))
     {
+      if (curr % 2 == 0) made_trump = 1;
+      else made_trump = 2;
       trump = order_up_suit;
+      cout << players[curr]->get_name() << " orders up " << trump << "\n" << endl;
       return;
     }
+    //cout << players[curr]->get_name() << " passes" << endl;
   }
 }
 
@@ -155,17 +163,19 @@ void Game::play_hand()
   {
     //determines lead card
     Card led_card = players[leader]->lead_card(trump);
+    cout << led_card << " led by " << players[leader]->get_name() << endl;
 
     //assumes the leader has the winning card and thus is the winner
     int winner = leader;
     Card win_card = led_card;
 
     //the rest play the cards
-    for (int j = 1; j < 5; j++)
+    for (int j = 1; j < 4; j++)
     {
-      int curr = (leader + i) % 4;
+      int curr = (leader + j) % 4;
       Card played = players[curr]->play_card(led_card, trump);
 
+      cout << played << " played by " << players[curr]->get_name() << endl;
       //checks and stores who is winning
       //if true it updates the variables
       if(Card_less(win_card, played, led_card, trump))
@@ -177,24 +187,86 @@ void Game::play_hand()
 
     //the winner is gonna become leader next
     leader = winner;
+    cout << players[winner]->get_name() << " takes the trick\n" << endl;
     //if the index of winner is even its team 1
     if (winner % 2 == 0) team_1_tricks++;
     //if the index of winner is odd its team 2
-    else team_2_tricks++;
+    else team_2_tricks++;    
   }
 
   //checks who got the most tricks thus getting a point
-  if (team_1_tricks > team_2_tricks) team_1_score++;
-  else team_2_score++;
+  int finalWinner = 0;
+  int WinnerTricksAmt = 0;
+  int points = 0;
+  bool march = false;
+  bool euchered = false; //may change later cause idk wehre to output if thy ot a march oor not
+  //bool ordered_up;
+  
+  if (team_1_tricks > team_2_tricks)
+  {
+    cout << players[0]->get_name() << " and " << players[2]->get_name() << " win the hand" << endl;
+    finalWinner = 1;
+    WinnerTricksAmt = team_1_tricks;
+    //ordered_up = made_trump == 1;
+  }
+  else 
+  {
+    finalWinner = 2;
+    WinnerTricksAmt = team_2_tricks;
+    cout << players[1]->get_name() << " and " << players[3]->get_name() << " win the hand" << endl;
+    //ordered_up = made_trump == 2;
+  }
+
+  //ordered_up = finalWinner == made_trump;
+  //cout << ordered_up << endl;
+  if (finalWinner == made_trump){
+    if(WinnerTricksAmt > 4)
+    {
+      points = 2;
+      march = true;
+    }
+    else if (WinnerTricksAmt > 2)
+    {
+      points = 1;
+    
+    }
+  }else
+  {
+    cout << "in else";
+    euchered = true;
+    points = 2;
+  }
+  
+  if (finalWinner == 1)
+  { 
+    // cout << "rhea";
+    // cout << team_1_score;
+    // cout << points;
+    team_1_score += points;
+  }
+  else 
+  {
+    team_2_score += points;
+  }
+  
+  if (euchered) cout << "euchered!" << endl;
+  else if (march) cout << "march!" << endl;
+  //announces scores
+  cout << players[0]->get_name() << " and " << players[2]->get_name() << " have " << team_1_score << " points" << endl;
+  cout << players[1]->get_name() << " and " << players[3]->get_name() << " have " << team_2_score << " points\n" << endl;
 }
 
 void Game::play()
 {
+  int hand_num = 0;
   while (team_1_score < points_to_win &&
          team_2_score < points_to_win)
   {
+    cout << "Hand " << hand_num << endl;
+    cout << players[dealer]->get_name() << " deals" << endl;
     deal();
     Card upcard = pack.deal_one();
+    cout << upcard << " turned up" << endl;
     Suit suit_order_up;
     make_trump(suit_order_up, upcard);
     play_hand();
@@ -202,6 +274,13 @@ void Game::play()
     //but it needs to wrap around the array
     dealer = (dealer + 1) % 4;
   }
+
+  //announces winnners
+  if (team_1_score > team_2_score)
+  {
+    cout << players[0]->get_name() << " and " << players[2]->get_name() << " win!" << endl;
+  }
+  else cout << players[1]->get_name() << " and " << players[3]->get_name() << " win!" << endl;
 }
 
 void Game::deletePlayers()
@@ -223,7 +302,7 @@ void Game::deletePlayers()
 
 int main(int argc, char* argv[])
 {
-  cout << "Hello World" << endl;
+  //cout << "Hello World" << endl;
   //checks that it has the 12 arguements for sample 4 players
   // if (argc != 12)
   // {
@@ -296,5 +375,6 @@ int main(int argc, char* argv[])
   }
 
   Game game(shuffle_on, points_to_win_game, is, names_Players, types_of_Players);
+  game.play();
   game.deletePlayers();
 }
