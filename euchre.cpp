@@ -65,38 +65,41 @@ void Game::deal(/*player, */)
   //frst pattern: deal 3-2-3-2 cards
   for (int i = 0; i < 4; i++)
   {
+    int curr = (dealer + 1 + i) % 4;
+
     //even turn deals 3
     if (i % 2 == 0)
     {
-      players[i]->add_card(pack.deal_one());
-      players[i]->add_card(pack.deal_one());
-      players[i]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
     }
 
     //odd turn deals 2
     else
     {
-      players[i]->add_card(pack.deal_one());
-      players[i]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
     }
   }
 
   //second pattern: deals 2-3-2-3 cards
   for (int i = 0; i < 4; i++)
   {
+    int curr = (dealer + 1 + i) % 4;
     //even turn deals 2
     if (i % 2 == 0)
     {
-      players[i]->add_card(pack.deal_one());
-      players[i]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
     }
 
     //odd turn deals 3
     else
     {
-      players[i]->add_card(pack.deal_one());
-      players[i]->add_card(pack.deal_one());
-      players[i]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
+      players[curr]->add_card(pack.deal_one());
     }
   }
 }
@@ -109,59 +112,80 @@ void Game::deal(Player * player)
 void Game::make_trump(Suit &order_up_suit, Card &upcard)
 { 
  //round 1 
-  int dealer_number = 0;
-  int round_number = 0;
+  int round_number = 1;
   
-  Card upcard = pack.deal_one();
-
-  // Player * eldest_hand = players[dealer_number - 1];
-  // Player * dealer = players[dealer_number]; 
-  bool is_dealer = true;
-  
-  for(int i = players.size() - 1; i >= 0; i--)
+  for(int i = 0; i < 4; i++)
   {
-    if (dealer_number == i)
-    {
-      is_dealer = true;
-    }
-    if(players[i]->make_trump(upcard, is_dealer, round_number, order_up_suit)) return;
+    int curr = (dealer + 1 + i) % 4;
 
-    is_dealer = false;
+    if(players[curr]->make_trump(upcard, dealer == curr,
+       round_number, order_up_suit))
+    {
+      trump = order_up_suit;
+      players[dealer]->add_and_discard(upcard);
+      return;
+    }
+
   }
-  is_dealer = false;
 
   //round 2
   //int eldest_hand_num = players.size() - 1; //eldest hand
   round_number = 2;
-  if (round_number == 2)
+  for(int i = 0; i < 4; i++)
   {
-    for(int i = players.size(); i >= 0; i--)
+    int curr = (dealer + 1 + i) % 4;
+
+    if(players[curr]->make_trump(upcard, dealer == curr,
+       round_number, order_up_suit))
     {
-      if (dealer_number == i)
-      {
-        is_dealer = true;
-        players[dealer_number]->make_trump(upcard, is_dealer, round_number, order_up_suit);
-        return;
-      }
-
-      if(players[i]->make_trump(upcard, is_dealer, round_number, order_up_suit)) return;
-
-      is_dealer = false;
+      trump = order_up_suit;
+      return;
     }
-    
-    is_dealer = false;  
   }
 }
 
 void Game::play_hand()
 {
-  Card led_card = players[dealer]->lead_card(trump);
+  int leader = (dealer + 1) % 4;
+  int team_1_tricks = 0;
+  int team_2_tricks = 0;
 
-  for (int i = 0; i < players.size(); i++)
+  //there is 5 tricks
+  for (int i = 0; i < 5; i++)
   {
-    if (i == dealer) continue;
-    players[i]->play_card(led_card, trump);
+    //determines lead card
+    Card led_card = players[leader]->lead_card(trump);
+
+    //assumes the leader has the winning card and thus is the winner
+    int winner = leader;
+    Card win_card = led_card;
+
+    //the rest play the cards
+    for (int j = 1; j < 5; j++)
+    {
+      int curr = (leader + i) % 4;
+      Card played = players[curr]->play_card(led_card, trump);
+
+      //checks and stores who is winning
+      //if true it updates the variables
+      if(Card_less(win_card, played, led_card, trump))
+      {
+        win_card = played;
+        winner = curr;
+      }
+    }
+
+    //the winner is gonna become leader next
+    leader = winner;
+    //if the index of winner is even its team 1
+    if (winner % 2 == 0) team_1_tricks++;
+    //if the index of winner is odd its team 2
+    else team_2_tricks++;
   }
+
+  //checks who got the most tricks thus getting a point
+  if (team_1_tricks > team_2_tricks) team_1_score++;
+  else team_2_score++;
 }
 
 void Game::play()
@@ -174,7 +198,9 @@ void Game::play()
     Suit suit_order_up;
     make_trump(suit_order_up, upcard);
     play_hand();
-    dealer++;
+    //usually it would be dealer++
+    //but it needs to wrap around the array
+    dealer = (dealer + 1) % 4;
   }
 }
 
