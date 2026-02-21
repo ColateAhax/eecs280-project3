@@ -73,32 +73,51 @@ void Pack::reset()
 //          https://en.wikipedia.org/wiki/In_shuffle.
 void Pack::shuffle()
 {
-  
-   Card temp[PACK_SIZE];
-   int count = 0;
-   while (count < 7)
-   {
-   //going through each element in the array
-   for(int i = 0; i < PACK_SIZE; i++)
-   {
-       //in shuffle formula
-       int newPos = (2*i + 1) % (PACK_SIZE + 1);
-
-
-       if (newPos == PACK_SIZE)
-       { //making sure it doesnt go out of bounds
-           newPos -= 1;
-       }
-       temp[newPos] = cards[i];
-
-   }
-   for(int c = 0; c < PACK_SIZE; c++)
+    for (int count = 0; count < 7; count++)
     {
-        cards[c] = temp[c];
+        Card temp[PACK_SIZE];
+
+        for (int i = 0; i < PACK_SIZE / 2; i++)
+        {
+            // Bottom half goes to odd positions
+            temp[2 * i + 1] = cards[i];
+            // Top half goes to even positions
+            temp[2 * i] = cards[i + PACK_SIZE / 2];
+        }
+
+        for (int c = 0; c < PACK_SIZE; c++)
+        {
+            cards[c] = temp[c];
+        }
     }
 
-   count++;
-    }
+    next = 0;
+  
+    // Card temp[PACK_SIZE];
+    // //int count = 0;
+    // for (int count = 0; count < 7; count++)
+    // {
+    //     //going through each element in the array
+    //     for(int i = 0; i < PACK_SIZE / 2; i++)
+    //     {
+    //         //in shuffle formula
+    //         int newPos = ((2* (i + 1)) % (PACK_SIZE + 1)) - 1;
+
+
+    //         if (newPos == PACK_SIZE)
+    //         { //making sure it doesnt go out of bounds
+    //             newPos -= 1;
+    //         }
+    //         temp[newPos] = cards[i];
+    //     }
+
+    //     for(int c = 0; c < PACK_SIZE; c++)
+    //     {
+    //         cards[c] = temp[c];
+    //     }
+    //     count++;
+    // }
+    // next = 0;
 }
 
 // EFFECTS: returns true if there are no more cards left in the pack

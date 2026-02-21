@@ -78,9 +78,11 @@ bool SimplePlayer::make_trump(const Card &upcard, bool is_dealer,
       order_up_suit = Suit_next(upcard.get_suit());
       return true;
     }
-    for (int i = 1; i < hand.size(); i++) 
+    //sneaky little change used to be 1
+    //for (int i = 1; i < hand.size(); i++) 
+    for (int i = 0; i < hand.size(); i++) 
     {
-      if((hand[i].get_suit() == upcard.get_suit()) && (hand[i].is_face_or_ace()
+      if((hand[i].get_suit() == Suit_next(upcard.get_suit())) && (hand[i].is_face_or_ace()
           || hand[i].is_left_bower(upcard.get_suit())
           || hand[i].is_right_bower(upcard.get_suit())))
       {
@@ -213,7 +215,9 @@ Card SimplePlayer::play_card(const Card &led_card, Suit trump)
     Card best_Card = hand[indexBest];
 
     //cycles through the deck
+    //sneaky little one before
     for (int i = 1; i < hand.size(); i++)
+    //for (int i = 0; i < hand.size(); i++)
     {
       Card current_card = hand[i];
 

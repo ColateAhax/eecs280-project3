@@ -232,7 +232,7 @@ void Game::play_hand()
     }
   }else
   {
-    cout << "in else";
+    //cout << "in else";
     euchered = true;
     points = 2;
   }
@@ -249,7 +249,7 @@ void Game::play_hand()
     team_2_score += points;
   }
   
-  if (euchered) cout << "euchered!" << endl;
+  if (euchered) cout << "euchred!" << endl;
   else if (march) cout << "march!" << endl;
   //announces scores
   cout << players[0]->get_name() << " and " << players[2]->get_name() << " have " << team_1_score << " points" << endl;
@@ -262,6 +262,7 @@ void Game::play()
   while (team_1_score < points_to_win &&
          team_2_score < points_to_win)
   {
+    if (shuffle_on) pack.shuffle();
     cout << "Hand " << hand_num << endl;
     cout << players[dealer]->get_name() << " deals" << endl;
     deal();
@@ -273,6 +274,7 @@ void Game::play()
     //usually it would be dealer++
     //but it needs to wrap around the array
     dealer = (dealer + 1) % 4;
+    hand_num++;
   }
 
   //announces winnners
