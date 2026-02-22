@@ -333,7 +333,7 @@ bool HumanPlayer::make_trump(const Card &upcard, bool is_dealer,
                         int round, Suit &order_up_suit) const
 {
   print_hand();
-  cout << "Human player: " << name << ", please enter a suit, or \"pass\":\n";
+  cout << "Human player " << name << ", please enter a suit, or \"pass\":\n";
   string input = decision();
   if (input == "pass") return false;
   order_up_suit = string_to_suit(input);
@@ -361,6 +361,7 @@ void HumanPlayer::add_and_discard(const Card &upcard)
 //  is removed the player's hand.
 Card HumanPlayer::lead_card(Suit trump)
 {
+  std::sort(hand.begin(), hand.end());
   print_hand();
   cout << "Human player " << name << ", please select a card:\n";
   int input = stoi(decision());
@@ -374,6 +375,7 @@ Card HumanPlayer::lead_card(Suit trump)
 //  The card is removed from the player's hand.
 Card HumanPlayer::play_card(const Card &led_card, Suit trump)
 {
+  std::sort(hand.begin(), hand.end());
   print_hand();
   cout << "Human player " << name << ", please select a card:\n";
   int input = stoi(decision());

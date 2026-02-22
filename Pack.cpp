@@ -47,7 +47,8 @@ Pack::Pack(std::istream& pack_input)
         std::string str;
         Rank r;
         Suit s;
-        //is the card array already filled with cards should we edit existing values or create new card objects
+        //is the card array already filled with cards should we edit 
+        // existing values or create new card objects
         pack_input >> r >> str >> s;
 
         Card newCard(r, s);
@@ -92,32 +93,7 @@ void Pack::shuffle()
     }
 
     next = 0;
-  
-    // Card temp[PACK_SIZE];
-    // //int count = 0;
-    // for (int count = 0; count < 7; count++)
-    // {
-    //     //going through each element in the array
-    //     for(int i = 0; i < PACK_SIZE / 2; i++)
-    //     {
-    //         //in shuffle formula
-    //         int newPos = ((2* (i + 1)) % (PACK_SIZE + 1)) - 1;
 
-
-    //         if (newPos == PACK_SIZE)
-    //         { //making sure it doesnt go out of bounds
-    //             newPos -= 1;
-    //         }
-    //         temp[newPos] = cards[i];
-    //     }
-
-    //     for(int c = 0; c < PACK_SIZE; c++)
-    //     {
-    //         cards[c] = temp[c];
-    //     }
-    //     count++;
-    // }
-    // next = 0;
 }
 
 // EFFECTS: returns true if there are no more cards left in the pack

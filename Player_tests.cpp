@@ -166,6 +166,24 @@ TEST(test_make_a_trump_part_2)
 // //REQUIRES Player has at least one card
 // //EFFECTS  Player adds one card to hand and removes one card from hand.
 // virtual void add_and_discard(const Card &upcard) = 0;
+TEST(test_add_and_discard_upcard_is_worst)
+{
+    Player * player = Player_factory("Test", "Simple");
+    Card upcard(NINE, SPADES); // trump but low value
+
+    player->add_card(Card(ACE, HEARTS));
+    player->add_card(Card(KING, HEARTS));
+    player->add_card(Card(QUEEN, HEARTS));
+    player->add_card(Card(JACK, HEARTS));
+    player->add_card(Card(TEN, HEARTS));
+
+    player->add_and_discard(upcard);
+
+
+    ASSERT_EQUAL(player->lead_card(SPADES), Card(ACE, HEARTS));
+    delete player;
+}
+
 TEST(test_simple_player_add_and_discard)
 {
     Card upCard(QUEEN, SPADES);
@@ -227,6 +245,8 @@ TEST(test_simple_player_add_and_discard)
     Card upCard4(ACE, SPADES); // high trump
 
     simple_Player4->add_card(Card(NINE, HEARTS));  // lowest non-trump — should be discarded
+    simple_Player4->add_card(Card(TEN, HEARTS));
+    simple_Player4->add_card(Card(QUEEN, HEARTS));
 
     simple_Player4->add_and_discard(upCard4);
 

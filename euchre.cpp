@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <cassert>
 #include <vector>
@@ -11,7 +12,7 @@ class Game
 {
   public:
     Game(bool shuffle_on, int points_to_win, std::istream& pack_input,
-    vector<std::string> names_Players, vector<std::string> types_of_Players);
+    vector<pair<std::string, std::string>> player_info);
     
     void play();
     void deletePlayers();
@@ -34,23 +35,18 @@ class Game
     void deal(Player *);
     void make_trump(Suit &order_up_suit, Card &upcard);
     void play_hand();
+    void score(int team_1_tricks, int team_2_tricks);
 };
 
 Game::Game(bool shuffle_on, int points_to_win, std::istream& pack_input,
-vector<std::string> names_Players, vector<std::string> types_of_Players)
+vector<pair<std::string, std::string>> player_info)
 
 :pack(pack_input), shuffle_on(shuffle_on), points_to_win(points_to_win)
 
 {
-  if (names_Players.size() != types_of_Players.size())
+  for(auto &play_inf : player_info)
   {
-    cout << "Different Numbers of Players and Types" << endl;
-    assert(false);
-  }
-
-  for (int i = 0; i < names_Players.size(); i++)
-  {
-    players.push_back(Player_factory(names_Players[i], types_of_Players[i]));
+    players.push_back(Player_factory(play_inf.first, play_inf.second));
   }
 }
 
@@ -193,18 +189,23 @@ void Game::play_hand()
     //if the index of winner is odd its team 2
     else team_2_tricks++;    
   }
+  score(team_1_tricks, team_2_tricks);
 
+
+}
+void Game::score(int team_1_tricks, int team_2_tricks){
   //checks who got the most tricks thus getting a point
   int finalWinner = 0;
   int WinnerTricksAmt = 0;
   int points = 0;
   bool march = false;
-  bool euchered = false; //may change later cause idk wehre to output if thy ot a march oor not
+  bool euchered = false; 
   //bool ordered_up;
   
   if (team_1_tricks > team_2_tricks)
   {
-    cout << players[0]->get_name() << " and " << players[2]->get_name() << " win the hand" << endl;
+    cout << players[0]->get_name() << " and " << players[2]->get_name() 
+    << " win the hand" << endl;
     finalWinner = 1;
     WinnerTricksAmt = team_1_tricks;
     //ordered_up = made_trump == 1;
@@ -213,7 +214,8 @@ void Game::play_hand()
   {
     finalWinner = 2;
     WinnerTricksAmt = team_2_tricks;
-    cout << players[1]->get_name() << " and " << players[3]->get_name() << " win the hand" << endl;
+    cout << players[1]->get_name() << " and " << players[3]->get_name() 
+    << " win the hand" << endl;
     //ordered_up = made_trump == 2;
   }
 
@@ -252,8 +254,10 @@ void Game::play_hand()
   if (euchered) cout << "euchred!" << endl;
   else if (march) cout << "march!" << endl;
   //announces scores
-  cout << players[0]->get_name() << " and " << players[2]->get_name() << " have " << team_1_score << " points" << endl;
-  cout << players[1]->get_name() << " and " << players[3]->get_name() << " have " << team_2_score << " points\n" << endl;
+  cout << players[0]->get_name() << " and " << players[2]->get_name() 
+  << " have " << team_1_score << " points" << endl;
+  cout << players[1]->get_name() << " and " << players[3]->get_name() 
+  << " have " << team_2_score << " points\n" << endl;
 }
 
 void Game::play()
@@ -262,6 +266,7 @@ void Game::play()
   while (team_1_score < points_to_win &&
          team_2_score < points_to_win)
   {
+    pack.reset();
     if (shuffle_on) pack.shuffle();
     cout << "Hand " << hand_num << endl;
     cout << players[dealer]->get_name() << " deals" << endl;
@@ -280,9 +285,11 @@ void Game::play()
   //announces winnners
   if (team_1_score > team_2_score)
   {
-    cout << players[0]->get_name() << " and " << players[2]->get_name() << " win!" << endl;
+    cout << players[0]->get_name() << " and " << players[2]->get_name() 
+    << " win!" << endl;
   }
-  else cout << players[1]->get_name() << " and " << players[3]->get_name() << " win!" << endl;
+  else cout << players[1]->get_name() << " and " << players[3]->get_name() 
+  << " win!" << endl;
 }
 
 void Game::deletePlayers()
@@ -317,6 +324,8 @@ int main(int argc, char* argv[])
 
   //sets the fileIn name and attempts to open it
   std::string fileIn = argv[1];
+  std::string os = "";
+  os += "./euchre.exe " + fileIn + " ";
   std::ifstream is(fileIn);
   if (!is.is_open()) 
   {
@@ -329,6 +338,7 @@ int main(int argc, char* argv[])
   //determines if we are shuffling
   bool shuffle_on = true;
   std::string shuff = std::string(argv[2]);
+  os += shuff + " ";
   if ( shuff == "noshuffle") shuffle_on = false;
   else if (shuff != "shuffle")
   {
@@ -340,7 +350,9 @@ int main(int argc, char* argv[])
   }
 
   //sets the points to win the name
-  int points_to_win_game = stoi(argv[3]);
+  std::string temp = std::string(argv[3]);
+  int points_to_win_game = stoi(temp);
+  os += temp + " ";
   if(points_to_win_game <= 1 && points_to_win_game >= 100)
   {
     cout << "Usage: euchre.exe PACK_FILENAME [shuffle|noshuffle] "
@@ -351,32 +363,31 @@ int main(int argc, char* argv[])
   }
 
   //gets the names and types of players
-  vector<std::string> names_Players;
-  vector<std::string> types_of_Players;
+  // vector<std::string> names_Players;
+  // vector<std::string> types_of_Players;
 
-  for(int i = 4; i < 12; i++)
+  vector<pair<string,string>> players_info;
+
+  for(int i = 4; i < 12; i += 2)
   {
-    std::string str = std::string(argv[i]);
+    std::string str1 = std::string(argv[i]);
+    std::string str2 = std::string(argv[i + 1]);
+    os += str1 + " " + str2 + " ";
 
-    //if its even its a name
-    if(i % 2 == 0) names_Players.push_back(str);
-
-    //if its odd its a type
-    else
+    if(str2 != "Human" && str2 != "Simple")
     {
-      if(str != "Human" && str != "Simple")
-      {
-        cout << "Usage: euchre.exe PACK_FILENAME [shuffle|noshuffle] "
-        << "POINTS_TO_WIN NAME1 TYPE1 NAME2 TYPE2 NAME3 TYPE3 "
-        << "NAME4 TYPE4" << endl;
+      cout << "3Usage: euchre.exe PACK_FILENAME [shuffle|noshuffle] "
+      << "POINTS_TO_WIN NAME1 TYPE1 NAME2 TYPE2 NAME3 TYPE3 "
+      << "NAME4 TYPE4" << endl;
 
-        return 1;
-      }
-      types_of_Players.push_back(str);
+      return 1;
     }
+
+    players_info.push_back({argv[i], argv[i+1]});
   }
 
-  Game game(shuffle_on, points_to_win_game, is, names_Players, types_of_Players);
+  cout << os << endl;
+  Game game(shuffle_on, points_to_win_game, is, players_info);
   game.play();
   game.deletePlayers();
 }
